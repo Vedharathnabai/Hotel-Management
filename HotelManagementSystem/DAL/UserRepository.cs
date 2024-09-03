@@ -1,29 +1,32 @@
 ﻿using Dapper;
 using HotelManagementSystem.Models;
 using System.Data;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace HotelManagementSystem.Data
 {
     public class UserRepository
     {
-        private readonly DapperContext _context;
+        private readonly IDbConnection _dbConnection;
 
-        public UserRepository(DapperContext context)
+        public UserRepository(IDbConnection dbConnection)
         {
-            _context = context;
+            _dbConnection = dbConnection;
         }
 
-        public async Task<int> CreateUserAsync(Customer customer)
+        public int CreateCustomer(Customer customer)
         {
-            var query = "INSERT INTO Customer (UserName, Email, PhoneNumber, Password, Location) " +
-                        "VALUES (@UserName, @Email, @PhoneNumber, @Password, @Location);" +
-                        "SELECT CAST(SCOPE_IDENTITY() as int);";
+            var query = @"INSERT INTO Customer (Name, Email, PhoneNumber, Address, Password) 
+                          VALUES (@Name, @Email, @PhoneNumber, @Address, @Password);
+                          SELECT CAST(SCOPE_IDENTITY() as int);";
 
-            using (var connection = _context.CreateConnection())
-            {
-                return await connection.QuerySingleAsync<int>(query, customer);
-            }
+            return _dbConnection.Query<int>(query, customer).Single();
+        }
+
+        public Customer GetCustomerByEmail(string email)
+        {
+            var query = "SELECT * FROM Customer WHERE Email = @Email";
+            return _dbConnection.Query<Customer>(query, new { Email = email }).SingleOrDefault();
         }
     }
 }

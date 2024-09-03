@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Data;
-using Microsoft.Data.SqlClient;
+﻿using System.Data;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 
 namespace HotelManagementSystem.Data
 {
@@ -16,8 +16,6 @@ namespace HotelManagementSystem.Data
         }
 
         public IDbConnection CreateConnection()
-        {
-            return new SqlConnection(_connectionString);
-        }
+            => new SqlConnection(_connectionString);
     }
 }

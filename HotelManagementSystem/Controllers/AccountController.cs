@@ -1,7 +1,6 @@
 ﻿using HotelManagementSystem.Data;
 using HotelManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace HotelManagementSystem.Controllers
 {
@@ -9,12 +8,14 @@ namespace HotelManagementSystem.Controllers
     {
         private readonly UserRepository _userRepository;
 
+        // Constructor injection for UserRepository
         public AccountController(UserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
         // GET: /Account/Register
+        [HttpGet]
         public IActionResult Register()
         {
             return View();
@@ -22,22 +23,14 @@ namespace HotelManagementSystem.Controllers
 
         // POST: /Account/Register
         [HttpPost]
-        public async Task<IActionResult> Register(Customer customer)
+        public IActionResult Register(Customer model)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    int userId = await _userRepository.CreateUserAsync(customer);
-                    return RedirectToAction("ThankYou");
-                }
-                catch
-                {
-                    ModelState.AddModelError("", "An error occurred while saving your data. Please try again.");
-                }
+                _userRepository.CreateCustomer(model);
+                return RedirectToAction("ThankYou");
             }
-
-            return View(customer);
+            return View(model);
         }
 
         // GET: /Account/ThankYou
